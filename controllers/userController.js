@@ -1,13 +1,29 @@
-const User = require("../models/authUser");
+const AuthUser = require("../models/authUser");
 var moment = require("moment");
+var jwt = require("jsonwebtoken");
 
 // /home
+// done
 const user_index_get = (req, res) => {
-  User.find()
+  var decoded = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET_KEY);
+
+  AuthUser.findOne({ _id: decoded.id })
     .then((result) => {
-      res.render("index", { arr: result, moment: moment });
+      res.render("index", { arr: result.customerInfo, moment: moment });
     })
 
+    .catch((arr) => {
+      console.log(arr);
+    });
+};
+
+const user_post = (req, res) => {
+  var decoded = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET_KEY);
+
+  AuthUser.updateOne({ _id: decoded.id }, { $push: { customerInfo: req.body } })
+    .then(() => {
+      res.redirect("/home");
+    })
     .catch((arr) => {
       console.log(arr);
     });
@@ -71,16 +87,6 @@ const user_put = (req, res) => {
 
 const user_add_get = (req, res) => {
   res.render("user/add");
-};
-
-const user_post = (req, res) => {
-  User.create(req.body)
-    .then(() => {
-      res.redirect("/home");
-    })
-    .catch((arr) => {
-      console.log(arr);
-    });
 };
 
 module.exports = {
