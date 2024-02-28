@@ -8,7 +8,6 @@ var jwt = require("jsonwebtoken");
 
 // 4- update nested object inside an array
 
-
 // /home
 // done
 const user_index_get = (req, res) => {
@@ -36,9 +35,11 @@ const user_post = (req, res) => {
     });
 };
 
-
 const user_delete = (req, res) => {
-  AuthUser.updateOne({ "customerInfo._id": req.params.id }, { $pull: { customerInfo: {_id: req.params.id} } })
+  AuthUser.updateOne(
+    { "customerInfo._id": req.params.id },
+    { $pull: { customerInfo: { _id: req.params.id } } }
+  )
     .then(() => {
       res.redirect("/home");
     })
@@ -49,12 +50,11 @@ const user_delete = (req, res) => {
 
 //  view/:id
 const user_view_get = (req, res) => {
-  AuthUser.findOne({"customerInfo._id": req.params.id})
+  AuthUser.findOne({ "customerInfo._id": req.params.id })
     .then((result) => {
       const clickedObject = result.customerInfo.find((item) => {
-        return item._id == req.params.id
-      }
-      )
+        return item._id == req.params.id;
+      });
       res.render("user/view", { obj: clickedObject, moment: moment });
     })
 
@@ -64,12 +64,11 @@ const user_view_get = (req, res) => {
 };
 
 const user_edit_get = (req, res) => {
-  AuthUser.findOne({"customerInfo._id": req.params.id})
+  AuthUser.findOne({ "customerInfo._id": req.params.id })
     .then((result) => {
       const clickedObject = result.customerInfo.find((item) => {
-        return item._id == req.params.id
-      }
-      )
+        return item._id == req.params.id;
+      });
       res.render("user/edit", { obj: clickedObject, moment: moment });
     })
 
@@ -78,7 +77,20 @@ const user_edit_get = (req, res) => {
     });
 };
 
-
+const user_put = (req, res) => {
+  AuthUser.updateOne(
+    { "customerInfo._id": req.params.id },
+    { "customerInfo.$": req.body }
+    // { "customerInfo.$.age": req.body.age }
+  )
+    .then((result) => {
+      console.log(result);
+      res.redirect("/home");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 
 const user_search_post = (req, res) => {
   const SearchText = req.body.searchText.trim();
@@ -90,19 +102,6 @@ const user_search_post = (req, res) => {
     })
     .catch((arr) => {
       console.log(arr);
-    });
-};
-
-
-
-const user_put = (req, res) => {
-  User.updateOne({ _id: req.params.id }, req.body)
-    .then((result) => {
-      console.log(result);
-      res.redirect("/home");
-    })
-    .catch((err) => {
-      console.log(err);
     });
 };
 
