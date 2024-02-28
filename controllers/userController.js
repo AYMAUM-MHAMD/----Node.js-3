@@ -29,6 +29,17 @@ const user_post = (req, res) => {
     });
 };
 
+
+const user_delete = (req, res) => {
+  AuthUser.updateOne({ "customerInfo._id": req.params.id }, { $pull: { customerInfo: {_id: req.params.id} } })
+    .then(() => {
+      res.redirect("/home");
+    })
+    .catch((arr) => {
+      console.log(arr);
+    });
+};
+
 const user_edit_get = (req, res) => {
   User.findById(req.params.id)
     .then((result) => {
@@ -64,15 +75,7 @@ const user_search_post = (req, res) => {
     });
 };
 
-const user_delete = (req, res) => {
-  User.deleteOne({ _id: req.params.id })
-    .then(() => {
-      res.redirect("/home");
-    })
-    .catch((arr) => {
-      console.log(arr);
-    });
-};
+
 
 const user_put = (req, res) => {
   User.updateOne({ _id: req.params.id }, req.body)
