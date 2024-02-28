@@ -94,11 +94,17 @@ const user_put = (req, res) => {
 
 const user_search_post = (req, res) => {
   const SearchText = req.body.searchText.trim();
+  var decoded = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET_KEY);
 
-  User.find({ $or: [{ fireName: SearchText }, { lastName: SearchText }] })
+  AuthUser.findOne({ _id: decoded.id })
     .then((result) => {
       console.log(result);
-      res.render("user/search", { arr: result, moment: moment });
+
+      const searchCustomers = result.customerInfo.filter((item) => {
+        return item.fireName.includes(SearchText) || item.lastName.includes(SearchText)
+      }
+      )
+      res.render("user/search", { arr: searchCustomers, moment: moment });
     })
     .catch((arr) => {
       console.log(arr);
