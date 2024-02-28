@@ -2,6 +2,13 @@ const AuthUser = require("../models/authUser");
 var moment = require("moment");
 var jwt = require("jsonwebtoken");
 
+// 1- get nested objects inside an array
+// 2- add nested object inside an array
+// 3- delete nested object inside an array
+
+// 4- update nested object inside an array
+
+
 // /home
 // done
 const user_index_get = (req, res) => {
@@ -40,27 +47,38 @@ const user_delete = (req, res) => {
     });
 };
 
-const user_edit_get = (req, res) => {
-  User.findById(req.params.id)
-    .then((result) => {
-      res.render("user/edit", { obj: result, moment: moment });
-    })
-
-    .catch((arr) => {
-      console.log(arr);
-    });
-};
-
+//  view/:id
 const user_view_get = (req, res) => {
-  User.findById(req.params.id)
+  AuthUser.findOne({"customerInfo._id": req.params.id})
     .then((result) => {
-      res.render("user/view", { obj: result, moment: moment });
+      const clickedObject = result.customerInfo.find((item) => {
+        return item._id == req.params.id
+      }
+      )
+      res.render("user/view", { obj: clickedObject, moment: moment });
     })
 
     .catch((arr) => {
       console.log(arr);
     });
 };
+
+const user_edit_get = (req, res) => {
+  AuthUser.findOne({"customerInfo._id": req.params.id})
+    .then((result) => {
+      const clickedObject = result.customerInfo.find((item) => {
+        return item._id == req.params.id
+      }
+      )
+      res.render("user/edit", { obj: clickedObject, moment: moment });
+    })
+
+    .catch((arr) => {
+      console.log(arr);
+    });
+};
+
+
 
 const user_search_post = (req, res) => {
   const SearchText = req.body.searchText.trim();
