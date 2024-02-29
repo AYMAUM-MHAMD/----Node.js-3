@@ -1,22 +1,24 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const bcrypt = require('bcrypt');
-
+const bcrypt = require("bcrypt");
 
 // define the Schema (the structure of the article)
 const authUserSchema = new Schema({
+  ProfileImage: String,
   username: String,
   email: String,
   password: String,
-  customerInfo: [{
-    fireName: String,
-    lastName: String,
-    email: String,
-    phoneNumber: String,
-    age: Number,
-    country: String,
-    gender: String,
-  }]
+  customerInfo: [
+    {
+      fireName: String,
+      lastName: String,
+      email: String,
+      phoneNumber: String,
+      age: Number,
+      country: String,
+      gender: String,
+    },
+  ],
 });
 
 authUserSchema.pre("save", async function (next) {

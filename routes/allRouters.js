@@ -9,6 +9,14 @@ const authController = require("../controllers/authController");
 router.get("*", checkIfUser);
 router.post("*", checkIfUser);
 
+const multer = require("multer");
+const upload = multer({ storage: multer.diskStorage({}) });
+
+
+router.post("/update-profile", upload.single("avatar"),
+authController.post_profileImage
+);
+
 router.get("/signout", authController.get_signout);
 
 router.get("/login", authController.get_login);

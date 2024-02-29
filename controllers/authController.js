@@ -2,6 +2,15 @@ const AuthUser = require("../models/authUser");
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
+require('dotenv').config()
+
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
 
 
 const get_welcome = (req, res) => {
@@ -67,6 +76,15 @@ const post_login = async (req, res) => {
   }
 };
 
+const post_profileImage =  (req, res, next) => {
+  cloudinary.uploader.upload(req.file.path,{folder: "x-system/profile-imgs"}, async (error, result) => {
+if (result) {
+  var decoded = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET_KEY);
+  const avatar = await AuthUser.updateOne({ _id: decoded.id },{ ProfileImage: result.secure_url });
+  res.redirect("/home");
+} 
+});
+}
 module.exports = {
   get_signout,
   get_login,
@@ -74,4 +92,5 @@ module.exports = {
   post_signup,
   post_login,
   get_welcome,
+  post_profileImage
 };
